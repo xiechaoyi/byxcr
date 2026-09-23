@@ -1,0 +1,29 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 运行控制（fnOS 通过 `cmd/main start|stop|status` 管理应用状态）
+#   start  → 0 成功 / 非 0 失败
+#   status → 0 运行中 / 3 未运行
+# ============================================================================
+set -u
+
+# shellcheck source=../app/lib/byxcr-env.sh
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+case "${1:-}" in
+    start)
+        byxcr_service_start || exit 1
+        exit 0
+        ;;
+    stop)
+        byxcr_service_stop
+        exit 0
+        ;;
+    status)
+        byxcr_service_status
+        exit $?
+        ;;
+    *)
+        byxcr_fail "未知的运行控制命令：${1:-}（应为 start / stop / status）"
+        exit 1
+        ;;
+esac

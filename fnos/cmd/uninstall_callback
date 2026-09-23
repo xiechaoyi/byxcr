@@ -1,0 +1,23 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 卸载后：清理运行时残留
+#
+# 只清理进程相关的临时文件；数据库与归档属于用户数据，
+# 是否删除交由 fnOS 在卸载时询问用户，这里一律不主动删除。
+# ============================================================================
+set -u
+
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+data_dir="$(byxcr_data_dir)"
+
+rm -f "$data_dir/byxcr.pid" 2>/dev/null
+rm -f "$data_dir/.restart-pending" 2>/dev/null
+
+# 清掉下载中断留下的中间产物（模型/临时目录），数据库与归档不动
+if [ -d "$data_dir/tmp" ]; then
+    find "$data_dir/tmp" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null
+fi
+
+echo "[byxcr] 已卸载（数据库与已归档的镜像文件保留在原位置）。"
+exit 0

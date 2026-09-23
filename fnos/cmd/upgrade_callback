@@ -1,0 +1,31 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 升级后
+#
+# 数据目录、数据库与归档都沿用原有位置（byxcr 会自行做表结构升级），
+# 这里只重建目录、补执行位、刷新运行时配置，并按升级前的状态恢复服务。
+# ============================================================================
+set -u
+
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+if [ ! -f "$(byxcr_bin)" ]; then
+    byxcr_fail "升级包内缺少 Linux 可执行文件：$(byxcr_bin)｜请在 Linux 上执行 fnos/build.sh 重新构建 .fpk 后再安装。"
+    exit 1
+fi
+
+byxcr_prepare_dirs
+byxcr_prepare_config
+
+if ! byxcr_write_env; then
+    exit 1
+fi
+
+marker="$(byxcr_data_dir)/.restart-pending"
+if [ -f "$marker" ]; then
+    rm -f "$marker" 2>/dev/null
+    byxcr_service_start || exit 1
+fi
+
+echo "[byxcr] 已升级到 ${TRIM_APPVER:-当前版本}。"
+exit 0

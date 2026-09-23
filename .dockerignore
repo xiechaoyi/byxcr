@@ -1,0 +1,9 @@
+.git
+.gitignore
+.vs
+.idea
+**/bin
+**/obj
+data
+*.user
+*.md

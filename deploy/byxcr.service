@@ -1,0 +1,21 @@
+[Unit]
+Description=byxcr container image sync service
+Documentation=https://github.com/
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 相对路径以工作目录为基准，务必显式指定
+WorkingDirectory=/opt/byxcr
+# 可选的环境变量覆盖文件（键值对，每行一条，如 BYXCR__Storage__DataDir=/data）
+EnvironmentFile=-/etc/byxcr/byxcr.env
+ExecStart=/usr/local/bin/byxcr run --config /data/byxcr.yaml
+Restart=always
+RestartSec=10
+# 下载大镜像时不要因为输出过多被杀
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

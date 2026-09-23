@@ -1,0 +1,35 @@
+# 运行时数据（数据库、归档与 byxcr init 生成的配置）
+data/
+
+# 构建中间目录
+bin/
+obj/
+
+# 例外：fnOS 应用包里的 bin 目录要纳入版本管理（命令行包装脚本在这里）
+!fnos/app/bin/
+
+# fnOS 应用包的构建产物（二进制由 fnos/build.sh 在 Linux 上编译并注入）
+fnos/app/bin/byxcr.bin
+fnos/app/bin/*.so
+fnos/dist/
+fnos/*.fpk
+
+# 归档目录（默认与 data/ 同级）。**必须锚定到仓库根**：
+# 不写前导斜杠的 `images/` 会匹配任意层级的同名目录，曾因此把
+# fnos/app/ui/images/（桌面入口图标）一并忽略 —— 包能打成功，
+# 但装到设备上「有入口、没图标」，且 fnpack 不校验图标故不报错。
+/images/
+
+# 例外：fnOS 桌面入口的图标必须纳入版本管理
+!fnos/app/ui/images/
+!fnos/app/ui/images/*.png
+
+# 编辑器 / 工具
+.vs/
+.vscode/
+.github/
+.mimocode/
+.workbuddy/
+*.user
+*.suo
+*.log
