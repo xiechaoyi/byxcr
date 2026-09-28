@@ -1,0 +1,23 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 升级前
+#
+# 先记下服务当前是否在运行（升级完成后按原状态恢复），再停掉服务，
+# 避免 target 下的文件被运行中的进程占用。
+# ============================================================================
+set -u
+
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+marker="$(byxcr_data_dir)/.restart-pending"
+rm -f "$marker" 2>/dev/null
+
+if byxcr_service_running; then
+    mkdir -p "$(byxcr_data_dir)" 2>/dev/null || true
+    : > "$marker"
+fi
+
+echo "[byxcr] 升级 ${TRIM_OLD_APPVER:-?} → ${TRIM_APPVER:-?}，正在停止服务 …"
+byxcr_service_stop
+
+exit 0

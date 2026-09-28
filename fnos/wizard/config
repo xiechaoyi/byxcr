@@ -1,0 +1,145 @@
+[
+  {
+    "stepTitle": "同步设置",
+    "items": [
+      {
+        "type": "tips",
+        "helpText": "留空的项会保持当前设置不变。保存后应用会自动重启，正在进行的下载会被中断并在下个周期重新开始。"
+      },
+      {
+        "type": "text",
+        "field": "wizard_registries",
+        "label": "镜像源（逗号分隔，留空保持不变）",
+        "initValue": ""
+      },
+      {
+        "type": "text",
+        "field": "wizard_platforms",
+        "label": "限定下载架构（留空保持不变）",
+        "initValue": ""
+      },
+      {
+        "type": "text",
+        "field": "wizard_interval",
+        "label": "默认同步周期（分钟，留空保持不变）",
+        "initValue": "",
+        "rules": [
+          {
+            "pattern": "^([0-9]+)?$",
+            "message": "请填写整数分钟数，或留空"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "wizard_max_concurrency",
+        "label": "下载并发数（留空保持不变）",
+        "initValue": "",
+        "rules": [
+          {
+            "pattern": "^([0-9]+)?$",
+            "message": "请填写整数，或留空"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "wizard_schedule_concurrency",
+        "label": "定时任务并发数（留空保持不变，上限 4）",
+        "initValue": "",
+        "rules": [
+          {
+            "pattern": "^([0-9]+)?$",
+            "message": "请填写整数，或留空"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "stepTitle": "Web 控制台与归档",
+    "items": [
+      {
+        "type": "password",
+        "field": "wizard_api_token",
+        "label": "Web 控制台令牌（留空保持不变）",
+        "initValue": ""
+      },
+      {
+        "type": "select",
+        "field": "wizard_webdav_enabled",
+        "label": "是否上传到 WebDAV",
+        "initValue": "keep",
+        "options": [
+          {
+            "label": "保持不变",
+            "value": "keep"
+          },
+          {
+            "label": "开启（归档只上传到 WebDAV）",
+            "value": "true"
+          },
+          {
+            "label": "关闭（归档写入本地共享目录）",
+            "value": "false"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "wizard_webdav_url",
+        "label": "WebDAV 地址（留空保持不变）",
+        "initValue": ""
+      },
+      {
+        "type": "text",
+        "field": "wizard_webdav_username",
+        "label": "WebDAV 用户名（留空保持不变）",
+        "initValue": ""
+      },
+      {
+        "type": "password",
+        "field": "wizard_webdav_password",
+        "label": "WebDAV 密码（留空保持不变）",
+        "initValue": ""
+      }
+    ]
+  },
+  {
+    "stepTitle": "高级",
+    "items": [
+      {
+        "type": "select",
+        "field": "wizard_log_level",
+        "label": "日志级别",
+        "initValue": "keep",
+        "options": [
+          {
+            "label": "保持不变",
+            "value": "keep"
+          },
+          {
+            "label": "debug（排查问题用）",
+            "value": "debug"
+          },
+          {
+            "label": "info（默认）",
+            "value": "info"
+          },
+          {
+            "label": "warn",
+            "value": "warn"
+          },
+          {
+            "label": "error",
+            "value": "error"
+          },
+          {
+            "label": "none（关闭日志）",
+            "value": "none"
+          }
+        ]
+      }
+    ]
+  }
+]

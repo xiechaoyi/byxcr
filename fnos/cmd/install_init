@@ -1,0 +1,21 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 安装前检查
+#
+# 此时应用文件尚未释放到 target，禁止引用 ${TRIM_APPDEST} 下的任何内容。
+# 这里只做提示性检查，不阻断安装。
+# ============================================================================
+set -u
+
+echo "[byxcr] 开始安装：系统 ${TRIM_SYS_VERSION:-未知} · 架构 ${TRIM_SYS_ARCH:-未知}"
+
+if ! command -v gzip >/dev/null 2>&1; then
+    echo "[byxcr] 未检测到 gzip：归档将使用内置压缩实现，功能不受影响，速度略慢。"
+    echo "[byxcr] 如需更快的压缩，可安装 gzip 或 pigz。"
+fi
+
+if [ -n "${TRIM_DATA_SHARE_PATHS:-}" ]; then
+    echo "[byxcr] 镜像归档目录：${TRIM_DATA_SHARE_PATHS%%:*}"
+fi
+
+exit 0

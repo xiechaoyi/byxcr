@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# 测试替身：伪装成 dotnet，验证 build.sh 传给 MSBuild 的参数是否正确，
+# 并按约定产出「一个合法的 x86-64 ELF」与一份性能汇总日志。
+set -e
+echo "SHIM-DOTNET-ARGS: $*"
+
+OUT=""
+prev=""
+LOGF=""
+for a in "$@"; do
+    case "$prev" in
+        -o) OUT="$a" ;;
+    esac
+    case "$a" in
+        *logfile=*)
+            LOGF="${a#*logfile=}"
+            LOGF="${LOGF%%;*}"
+            ;;
+    esac
+    prev="$a"
+done
+
+[ -n "$OUT" ] || { echo "SHIM: 没有 -o 参数" >&2; exit 1; }
+mkdir -p "$OUT"
+
+# 合法的 x86-64 ELF 头（e_machine=0x3E）
+ELF="$OUT/byxcr"
+command -v cygpath >/dev/null 2>&1 && ELF="$(cygpath -w "$ELF")"
+python -c "
+import struct, sys
+h = bytearray(64)
+h[0:4] = b'\x7fELF'
+h[4] = 2; h[5] = 1; h[6] = 1
+struct.pack_into('<H', h, 16, 2)
+struct.pack_into('<H', h, 18, 0x3E)
+open(sys.argv[1], 'wb').write(bytes(h))
+" "$ELF"
+chmod 0755 "$OUT/byxcr"
+
+if [ -n "$LOGF" ]; then
+    mkdir -p "$(dirname "$LOGF")"
+    {
+        printf '已启动生成。\n'
+        printf '目标性能摘要:\n'
+        printf '%8d 毫秒 IlcCompile                          1 次调用\n' 240000
+        printf '%8d 毫秒 _CopyFilesMarkedCopyLocal           1 次调用\n' 1982900
+        printf '%8d 毫秒 CoreCompile                         1 次调用\n' 7175
+        printf '\n'
+        printf '       42 毫秒 ProcessFrameworkReferences         2 次调用\n'
+    } > "$LOGF"
+fi
+exit 0

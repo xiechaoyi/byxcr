@@ -1,0 +1,25 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 安装文件后
+#   * 建立运行目录、补可执行位
+#   * 生成注释齐全的默认配置文件 ${TRIM_PKGETC}/byxcr.yaml（已存在则不覆盖）
+#   * 把安装向导收集到的值写入 ${TRIM_PKGETC}/byxcr.env
+# ============================================================================
+set -u
+
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+if [ ! -f "$(byxcr_bin)" ]; then
+    byxcr_fail "应用包内缺少 Linux 可执行文件：$(byxcr_bin)｜请在 Linux 上执行 fnos/build.sh 重新构建 .fpk 后再安装。"
+    exit 1
+fi
+
+byxcr_prepare_dirs
+byxcr_prepare_config
+
+if ! byxcr_write_env; then
+    exit 1
+fi
+
+echo "[byxcr] 安装完成，可在应用中心启动。"
+exit 0

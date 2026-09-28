@@ -1,0 +1,100 @@
+[
+  {
+    "stepTitle": "镜像源与同步",
+    "items": [
+      {
+        "type": "tips",
+        "helpText": "byxcr 会按顺序探测下面的镜像源并使用第一个可用的源，全部不可用时才回退到官方 docker.io。"
+      },
+      {
+        "type": "text",
+        "field": "wizard_registries",
+        "label": "镜像源（逗号分隔）",
+        "initValue": "docker.1ms.run,mirror.ccs.tencentyun.com,dockerproxy.net,hub.rat.dev,docker.1panel.live",
+        "rules": [
+          {
+            "required": true,
+            "message": "请至少填写一个镜像源"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "wizard_platforms",
+        "label": "限定下载架构（留空表示全部）",
+        "initValue": ""
+      },
+      {
+        "type": "tips",
+        "helpText": "留空会下载镜像清单中的全部架构并合并进同一个归档；也可只填需要的架构以节省空间，例如 linux/amd64,linux/arm64。"
+      },
+      {
+        "type": "text",
+        "field": "wizard_interval",
+        "label": "默认同步周期（分钟）",
+        "initValue": "1440",
+        "rules": [
+          {
+            "pattern": "^[0-9]+$",
+            "message": "请填写整数分钟数"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "field": "wizard_max_concurrency",
+        "label": "下载并发数（建议 1-4）",
+        "initValue": "2",
+        "rules": [
+          {
+            "pattern": "^[0-9]+$",
+            "message": "请填写整数"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "stepTitle": "Web 控制台与归档",
+    "items": [
+      {
+        "type": "tips",
+        "helpText": "Web 控制台端口固定为 5088，安装后可从桌面图标打开；页面为只读，新增/同步/删除等写操作需要下面的令牌。"
+      },
+      {
+        "type": "password",
+        "field": "wizard_api_token",
+        "label": "Web 控制台令牌（可留空）",
+        "initValue": ""
+      },
+      {
+        "type": "tips",
+        "helpText": "归档默认写入 fnOS 共享目录 byxcr/images，可在文件管理器中直接取用；也可改为上传到 WebDAV，此时不再写本地。"
+      },
+      {
+        "type": "switch",
+        "field": "wizard_webdav_enabled",
+        "label": "把归档上传到 WebDAV",
+        "initValue": "false"
+      },
+      {
+        "type": "text",
+        "field": "wizard_webdav_url",
+        "label": "WebDAV 地址（开启时必填）",
+        "initValue": ""
+      },
+      {
+        "type": "text",
+        "field": "wizard_webdav_username",
+        "label": "WebDAV 用户名",
+        "initValue": ""
+      },
+      {
+        "type": "password",
+        "field": "wizard_webdav_password",
+        "label": "WebDAV 密码",
+        "initValue": ""
+      }
+    ]
+  }
+]

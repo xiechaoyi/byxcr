@@ -1,0 +1,58 @@
+#!/bin/bash
+# ============================================================================
+# byxcr 命令行入口
+#
+# 由 config/resource 的 usr-local-linker 暴露为 /usr/local/bin/byxcr，
+# 让用户在 fnOS 终端里直接使用 add / list / sync / records 等子命令，
+# 并且与后台服务共用同一个数据库、归档目录与配置。
+#
+#   示例：byxcr add mysql:5.6 --interval 24h
+#         byxcr list
+#         byxcr records mysql:5.6
+# ============================================================================
+set -u
+
+# 解析自身真实路径：/usr/local/bin/byxcr 是指向应用目录的软链，
+# 由它定位同目录下的公共函数库
+SELF="$0"
+if command -v readlink >/dev/null 2>&1; then
+    resolved="$(readlink -f "$SELF" 2>/dev/null || true)"
+    if [ -n "$resolved" ]; then SELF="$resolved"; fi
+fi
+SELF_DIR="$(cd "$(dirname "$SELF")" 2>/dev/null && pwd)"
+LIB="$SELF_DIR/../lib/byxcr-env.sh"
+
+if [ ! -r "$LIB" ]; then
+    echo "byxcr：应用文件不完整（缺少 $LIB），请在应用中心重新安装。" >&2
+    exit 127
+fi
+
+# shellcheck source=../lib/byxcr-env.sh
+. "$LIB"
+
+BIN="$(byxcr_bin)"
+CONF="$(byxcr_conf)"
+ENV_FILE="$(byxcr_env_file)"
+DATA_DIR="$(byxcr_data_dir)"
+
+if [ ! -f "$BIN" ]; then
+    echo "byxcr：找不到可执行文件 $BIN" >&2
+    echo "byxcr：应用可能未正确安装或已被卸载，请在应用中心重新安装。" >&2
+    exit 127
+fi
+
+# 导入应用设置向导生成的运行时配置（镜像源、令牌、WebDAV 等）
+byxcr_env_export "$ENV_FILE"
+
+# 目录统一以 /var/apps 下的稳定链接为准，不受当前工作目录影响
+export BYXCR_CONFIG="$CONF"
+export BYXCR_DATA_DIR="${BYXCR_DATA_DIR:-$DATA_DIR}"
+export BYXCR_TEMP_DIR="${BYXCR_TEMP_DIR:-$DATA_DIR/tmp}"
+export BYXCR_LOG_DIR="${BYXCR_LOG_DIR:-$DATA_DIR/logs}"
+export BYXCR_IMAGE_ROOT="${BYXCR_IMAGE_ROOT:-$(byxcr_image_root)}"
+if [ -z "${TZ:-}" ]; then export TZ=Asia/Shanghai; fi
+
+# 相对路径以数据目录为基准（byxcr 的相对路径解析基于进程工作目录）
+cd "$DATA_DIR" 2>/dev/null || cd "$(byxcr_appdest)" 2>/dev/null || true
+
+exec "$BIN" --config "$CONF" "$@"

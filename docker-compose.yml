@@ -1,0 +1,22 @@
+services:
+  byxcr:
+    build:
+      context: .
+    image: byxcr:latest
+    container_name: byxcr
+    restart: unless-stopped
+    environment:
+      BYXCR__Storage__DataDir: /data
+      BYXCR__Storage__ImageRoot: /images
+      BYXCR__Registry__Items: '["mirror.ccs.tencentyun.com","docker.1ms.run","dockerproxy.net"]'
+      BYXCR__Sync__MaxConcurrency: "2"
+      BYXCR__Compression__Mode: auto
+      BYXCR__Log__Level: info
+    volumes:
+      - ./data:/data
+      - ./images:/images
+    healthcheck:
+      test: ["CMD", "/wln/byxcr", "version"]
+      interval: 60s
+      timeout: 10s
+      retries: 3

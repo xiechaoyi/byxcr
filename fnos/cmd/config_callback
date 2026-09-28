@@ -1,0 +1,23 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 配置变更后
+#
+# 应用设置里改完参数：先把新值写进 ${TRIM_PKGETC}/byxcr.env，再按变更前的运行状态决定是否重启。
+# ============================================================================
+set -u
+
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+if ! byxcr_write_env; then
+    exit 1
+fi
+
+marker="$(byxcr_data_dir)/.restart-pending"
+if [ -f "$marker" ]; then
+    rm -f "$marker" 2>/dev/null
+    byxcr_service_start || exit 1
+else
+    echo "[byxcr] 配置已保存（服务原本未运行，保持停止状态）。"
+fi
+
+exit 0

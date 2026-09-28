@@ -1,0 +1,22 @@
+#!/bin/bash
+# ============================================================================
+# byxcr · 配置变更前
+#
+# 记录服务变更前是否在运行：只有在跑着的服务才需要在配置生效后重新拉起，
+# 否则会把用户手动停掉的服务又打开。
+# ============================================================================
+set -u
+
+. "${TRIM_APPDEST:-/var/apps/${TRIM_APPNAME:-byxcr}/target}/lib/byxcr-env.sh"
+
+marker="$(byxcr_data_dir)/.restart-pending"
+rm -f "$marker" 2>/dev/null
+
+if byxcr_service_running; then
+    mkdir -p "$(byxcr_data_dir)" 2>/dev/null || true
+    : > "$marker"
+fi
+
+byxcr_service_stop
+
+exit 0
